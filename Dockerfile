@@ -1,3 +1,14 @@
+# Stage 1: Build the React frontend
+FROM node:20-slim AS frontend-build
+WORKDIR /app/frontend
+
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Build the FastAPI backend and final image
 FROM python:3.10-slim
 
 # Set environment variables
@@ -22,7 +33,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# Create mount points
+# Copy built frontend from Stage 1
+COPY --from=frontend-build /app/frontend/dist /app/frontend/dist
+
+# Create mount points for persistent volumes
 RUN mkdir -p /app/data /app/ai/models
 
 # Download AI models during image build
