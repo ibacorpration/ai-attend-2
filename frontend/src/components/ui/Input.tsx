@@ -1,18 +1,20 @@
 import React from 'react';
+import { Input as HeroInput, InputProps as HeroInputProps } from '@heroui/react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+// Using Omit to avoid clashes with standard HTML input attributes if they were passed
+interface InputProps extends Omit<HeroInputProps, 'size'> {
   label?: string;
   icon?: React.ReactNode;
 }
 
 export const Input: React.FC<InputProps> = ({ label, icon, className = '', ...props }) => {
   return (
-    <div>
-      {label && <label className="label">{label}</label>}
-      <div style={{ position: 'relative' }}>
-        {icon && <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }}>{icon}</div>}
-        <input className={`input-field ${className}`} style={icon ? { paddingLeft: '35px' } : {}} {...props} />
-      </div>
-    </div>
+    <HeroInput 
+      label={label}
+      labelPlacement="outside"
+      startContent={icon}
+      className={className}
+      {...props as any}
+    />
   );
 };

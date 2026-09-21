@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -16,17 +18,31 @@ interface ConfirmDialogProps {
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen, onClose, onConfirm, title, message, confirmText = 'Confirm', cancelText = 'Cancel', isDestructive = false
 }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (isOpen && contentRef.current) {
+      gsap.fromTo(contentRef.current, 
+        { opacity: 0, scale: 0.95 },
+        { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(1.5)' }
+      );
+    }
+  }, [isOpen]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>{message}</p>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-        <Button variant="secondary" onClick={onClose}>{cancelText}</Button>
-        <Button 
-          onClick={() => { onConfirm(); onClose(); }}
-          style={{ background: isDestructive ? 'var(--error)' : 'var(--accent-primary)' }}
-        >
-          {confirmText}
-        </Button>
+      <div ref={contentRef}>
+        <p className="text-ink/70 mb-6">{message}</p>
+        <div className="flex justify-end gap-4">
+          <Button variant="flat" onClick={onClose}>{cancelText}</Button>
+          <Button 
+            variant="solid"
+            color={isDestructive ? 'danger' : 'primary'}
+            onClick={() => { onConfirm(); onClose(); }}
+          >
+            {confirmText}
+          </Button>
+        </div>
       </div>
     </Modal>
   );

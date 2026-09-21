@@ -1,14 +1,18 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { useCameraStream } from './useCameraStream';
 import { useFaceRecognition } from './useFaceRecognition';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 export const CameraScanView: React.FC = () => {
   const navigate = useNavigate();
   const { videoRef, startCamera, stopCamera, cameraError } = useCameraStream();
   const { scanState, setScanState, statusText, setStatusText, result, processFrame, resetState } = useFaceRecognition();
+  
+  const ringRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -68,79 +72,84 @@ export const CameraScanView: React.FC = () => {
 
   const getRingColor = () => {
     switch(scanState) {
-      case 'SUCCESS': return 'var(--success)';
-      case 'FAILED': return 'var(--error)';
-      case 'RECOGNIZING': return 'var(--accent-primary)';
+      case 'SUCCESS': return '#10b981'; // success-main
+      case 'FAILED': return '#ef4444'; // danger-main
+      case 'RECOGNIZING': return '#c4f000'; // accent-primary
       default: return 'rgba(255, 255, 255, 0.4)';
     }
   };
 
+  useGSAP(() => {
+    if (ringRef.current) {
+      if (scanState === 'RECOGNIZING') {
+        gsap.to(ringRef.current, {
+          rotate: 360,
+          scale: 1.05,
+          duration: 2,
+          repeat: -1,
+          ease: "linear",
+          boxShadow: `0 0 0 4px ${getRingColor()} inset`
+        });
+      } else {
+        gsap.killTweensOf(ringRef.current);
+        gsap.to(ringRef.current, {
+          rotate: 0,
+          scale: 1,
+          duration: 0.3,
+          boxShadow: `0 0 0 4px ${getRingColor()} inset`
+        });
+      }
+    }
+  }, [scanState]);
+
+  useGSAP(() => {
+    if (statusRef.current) {
+      gsap.fromTo(statusRef.current, 
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
+      );
+    }
+  }, [statusText]);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-      <div style={{ 
-        position: 'relative', 
-        width: '280px', height: '280px',
-        borderRadius: '50%', overflow: 'hidden',
-        boxShadow: 'var(--shadow-md)', background: '#000'
-      }}>
-        <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+    <div className="flex flex-col items-center gap-6">
+      <div className="relative w-[280px] h-[280px] rounded-full overflow-hidden shadow-md bg-black">
+        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover scale-x-[-1]" />
         
-        {/* Scanning Ring Overlay (Inline for simplicity) */}
-        <motion.div
-          animate={{
-            boxShadow: `0 0 0 4px ${getRingColor()} inset`,
-            scale: scanState === 'RECOGNIZING' ? [1, 1.05, 1] : 1,
-            rotate: scanState === 'RECOGNIZING' ? 360 : 0
-          }}
-          transition={{ 
-            rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-            scale: { duration: 1, repeat: Infinity }
-          }}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: '50%', pointerEvents: 'none' }}
+        {/* Scanning Ring Overlay */}
+        <div
+          ref={ringRef}
+          className="absolute inset-0 rounded-full pointer-events-none"
         />
 
-        {/* Success animation */}
-        <AnimatePresence>
-          {cameraError && (
-            <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(239, 68, 68, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', padding: '1rem', textAlign: 'center', zIndex: 10}}>
-              <AlertCircle size={40} style={{ marginBottom: '0.5rem' }} />
-              <br/>{cameraError}
-            </div>
-          )}
-          {scanState === 'SUCCESS' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              style={{
-                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                background: 'rgba(16, 185, 129, 0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10
-              }}
-            >
-              <CheckCircle2 size={80} color="var(--success)" fill="white" />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Camera error / Success overlay */}
+        {cameraError && (
+          <div className="absolute inset-0 bg-danger-main/80 flex flex-col items-center justify-center text-white p-4 text-center z-10">
+            <AlertCircle size={40} className="mb-2" />
+            <span>{cameraError}</span>
+          </div>
+        )}
+        
+        {scanState === 'SUCCESS' && (
+          <div className="absolute inset-0 bg-success-main/20 flex items-center justify-center z-10">
+            <CheckCircle2 size={80} className="text-success-main fill-white" />
+          </div>
+        )}
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={statusText}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          style={{
-            background: scanState === 'SUCCESS' ? 'var(--success)' : scanState === 'FAILED' ? 'var(--error)' : 'var(--surface-color)',
-            color: (scanState === 'SUCCESS' || scanState === 'FAILED') ? 'white' : 'var(--accent-primary)',
-            padding: '0.5rem 1.25rem', borderRadius: '2rem', fontWeight: 500, fontSize: '1rem',
-            boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '0.5rem'
-          }}
-        >
-          {scanState === 'FAILED' && <AlertCircle size={18} />}
-          {scanState === 'SUCCESS' && <CheckCircle2 size={18} />}
-          {statusText}
-        </motion.div>
-      </AnimatePresence>
+      <div
+        ref={statusRef}
+        key={statusText}
+        className={`px-5 py-2 rounded-full font-medium text-base shadow-sm flex items-center gap-2 ${
+          scanState === 'SUCCESS' ? 'bg-success-main text-white' : 
+          scanState === 'FAILED' ? 'bg-danger-main text-white' : 
+          'bg-surface text-accent-primary'
+        }`}
+      >
+        {scanState === 'FAILED' && <AlertCircle size={18} />}
+        {scanState === 'SUCCESS' && <CheckCircle2 size={18} />}
+        {statusText}
+      </div>
     </div>
   );
 };

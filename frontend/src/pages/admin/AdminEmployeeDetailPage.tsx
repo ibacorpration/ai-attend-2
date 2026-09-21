@@ -24,29 +24,32 @@ export default function AdminEmployeeDetailPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button onClick={() => navigate('/admin/employees')} style={{ color: 'var(--text-secondary)' }}>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={() => navigate('/admin/employees')} 
+          className="text-ink/60 hover:text-ink transition-colors p-2 -ml-2 rounded-lg hover:bg-surface"
+        >
           <ArrowLeft size={24} />
         </button>
-        <h2>Employee Profile</h2>
+        <h2 className="text-2xl font-bold text-ink">Employee Profile</h2>
       </div>
 
       <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary)' }}>
+        <div className="flex justify-between items-start flex-wrap gap-6">
+          <div className="flex gap-6 items-center">
+            <div className="w-20 h-20 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary shrink-0">
               <User size={40} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{employee.full_name}</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>{employee.employee_code} • {employee.department}</p>
+              <h2 className="text-2xl font-bold mb-1 text-ink">{employee.full_name}</h2>
+              <p className="text-ink/70 font-medium">{employee.employee_code} • {employee.department}</p>
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Button variant="secondary" onClick={() => setIsEditOpen(true)}>Edit Details</Button>
-            <Button icon={<Camera size={18} />} onClick={() => setIsEnrollOpen(true)}>Enroll Face</Button>
+          <div className="flex gap-3">
+            <Button variant="flat" onClick={() => setIsEditOpen(true)}>Edit Details</Button>
+            <Button color="primary" icon={<Camera size={18} />} onClick={() => setIsEnrollOpen(true)}>Enroll Face</Button>
           </div>
         </div>
       </Card>

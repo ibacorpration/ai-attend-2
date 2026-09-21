@@ -1,30 +1,20 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { PageTransition } from '@/components/ui/PageTransition';
 
 export const PublicLayout: React.FC = () => {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-canvas text-ink">
       {/* Background soft blob */}
-      <div style={{
-        position: 'absolute',
-        width: '600px', height: '600px',
-        background: 'radial-gradient(circle, var(--accent-light) 0%, rgba(250,250,251,0) 70%)',
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 0,
-        opacity: 0.6,
-      }} className="animate-pulse-slow" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full mix-blend-multiply filter blur-3xl opacity-50 z-0 animate-pulse-slow"
+        style={{ background: 'radial-gradient(circle, var(--color-accent-primary) 0%, transparent 70%)' }}
+      />
       
-      <div style={{ zIndex: 1, width: '100%' }}>
-        <Outlet />
+      <div className="z-10 w-full flex flex-col items-center">
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </div>
     </div>
   );

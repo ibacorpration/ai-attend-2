@@ -1,12 +1,23 @@
-
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ScanFace } from 'lucide-react';
 import { RoleSelectorCard } from '@/features/role-selector/RoleSelectorCard';
 import { Card } from '@/components/ui/Card';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (headerRef.current) {
+      gsap.fromTo(headerRef.current.children, 
+        { y: -20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out' }
+      );
+    }
+  }, []);
 
   const handleSelectRole = (role: 'employee' | 'admin') => {
     if (role === 'employee') navigate('/scan');
@@ -14,22 +25,20 @@ export default function LandingPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ zIndex: 1, textAlign: 'center', marginBottom: '2rem' }}>
-        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-          <div style={{ display: 'inline-flex', padding: '1rem', background: 'var(--surface-color)', borderRadius: '50%', boxShadow: 'var(--shadow-sm)', marginBottom: '1rem' }}>
-            <ScanFace size={48} color="var(--accent-primary)" />
-          </div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 700, letterSpacing: '-0.025em', marginBottom: '0.5rem' }}>
-            FaceAttend AI
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
-            Secure, frictionless attendance.
-          </p>
-        </motion.div>
+    <div className="flex flex-col items-center">
+      <div ref={headerRef} className="z-10 text-center mb-12 flex flex-col items-center">
+        <div className="inline-flex p-4 bg-surface rounded-full shadow-sm mb-6 text-accent-primary">
+          <ScanFace size={48} />
+        </div>
+        <h1 className="text-5xl font-bold tracking-tight mb-2 text-ink">
+          FaceAttend AI
+        </h1>
+        <p className="text-ink/70 text-lg font-medium">
+          Secure, frictionless attendance.
+        </p>
       </div>
 
-      <Card variant="glass" style={{ width: '100%', maxWidth: '400px' }}>
+      <Card variant="glass" className="w-full max-w-md">
         <RoleSelectorCard onSelectRole={handleSelectRole} />
       </Card>
     </div>

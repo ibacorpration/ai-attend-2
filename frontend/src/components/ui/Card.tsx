@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card as HeroCard, CardBody } from '@heroui/react';
 
 interface CardProps {
   children: React.ReactNode;
@@ -13,11 +14,14 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   style = {}
 }) => {
-  const baseClass = variant === 'glass' ? 'glass-card' : 'surface-card';
-  
   return (
-    <div className={`${baseClass} ${className}`} style={{ padding: '1.5rem', ...style }}>
-      {children}
-    </div>
+    <HeroCard 
+      className={`${variant === 'glass' ? 'bg-surface/50 backdrop-blur-md' : 'bg-surface'} shadow-md rounded-2xl ${className}`}
+      style={style}
+    >
+      <CardBody className="p-6">
+        {children}
+      </CardBody>
+    </HeroCard>
   );
 };

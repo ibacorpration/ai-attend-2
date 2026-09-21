@@ -31,68 +31,49 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }}
+          className="fixed inset-0 bg-ink/50 z-40 lg:hidden backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
-      <aside style={{
-        position: 'fixed',
-        left: isOpen ? 0 : '-100%',
-        top: 0, bottom: 0, width: '280px',
-        background: 'var(--surface-color)',
-        borderRight: '1px solid #E5E7EB',
-        transition: 'left 0.3s ease',
-        zIndex: 50,
-        display: 'flex', flexDirection: 'column',
-      }}
-      className="md-static" // assumes a global media query handles positioning on desktop
-      >
-        <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>Admin Panel</h2>
-          <button onClick={onClose} className="md-hidden">
+      <aside className={`
+        fixed top-0 bottom-0 left-0 w-[280px] bg-ink border-r border-ink z-50 flex flex-col
+        transition-transform duration-300 ease-in-out lg:translate-x-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="p-6 flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-surface">FaceAttend AI</h2>
+          <button onClick={onClose} className="lg:hidden text-surface/70 hover:text-surface">
             <X />
           </button>
         </div>
 
-        <nav style={{ flex: 1, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <nav className="flex-1 px-4 py-2 flex flex-col gap-2">
           {navItems.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
               end={item.end}
               onClick={onClose}
-              style={({ isActive }) => ({
-                display: 'flex', alignItems: 'center', gap: '1rem',
-                padding: '0.75rem 1rem', borderRadius: '0.5rem',
-                background: isActive ? 'var(--accent-light)' : 'transparent',
-                color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                fontWeight: isActive ? 600 : 500,
-                width: '100%', textAlign: 'left', textDecoration: 'none'
-              })}
+              className={({ isActive }) => `
+                flex items-center gap-4 px-4 py-3 rounded-xl font-medium w-full text-left transition-colors relative
+                ${isActive ? 'bg-surface text-ink shadow-sm' : 'text-surface/70 hover:bg-surface/10 hover:text-surface'}
+              `}
             >
               {item.icon} {item.name}
             </NavLink>
           ))}
         </nav>
 
-        <div style={{ padding: '1rem', borderTop: '1px solid #E5E7EB' }}>
+        <div className="p-4 border-t border-surface/10">
           <button 
             onClick={handleLogout}
-            style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem', color: 'var(--error)', width: '100%' }}
+            className="flex items-center gap-4 px-4 py-3 text-danger-main hover:bg-danger-main/10 rounded-xl w-full transition-colors font-medium"
           >
             <LogOut size={20} /> Logout
           </button>
         </div>
       </aside>
-
-      {/* Basic media query logic injected via style tag for simplicity in this artifact */}
-      <style>{`
-        @media (min-width: 768px) {
-          .md-static { left: 0 !important; position: static !important; }
-          .md-hidden { display: none !important; }
-        }
-      `}</style>
     </>
   );
 };

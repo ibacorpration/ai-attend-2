@@ -12,13 +12,14 @@ interface FaceEnrollmentWizardProps {
 
 export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOpen, onClose, employeeName }) => {
   const [step, setStep] = useState(1);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const { videoRef, cameraError, startCamera, stopCamera } = useCameraStream();
 
-  // Clean up camera when modal closes unexpectedly
   useEffect(() => {
     if (!isOpen) {
       stopCamera();
       setStep(1);
+      setCapturedImage(null);
     }
   }, [isOpen, stopCamera]);
 
@@ -27,8 +28,19 @@ export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOp
       setStep(2);
       setTimeout(() => startCamera(), 0);
     } else if (step === 2) {
-      // Here you would capture the frame and upload it.
-      // Mocking the capture delay:
+      if (videoRef.current) {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg');
+          setCapturedImage(dataUrl);
+          
+          // Here you would typically send `dataUrl` to an API to persist
+        }
+      }
       stopCamera();
       setStep(3);
     } else {
@@ -38,53 +50,66 @@ export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOp
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Enroll Face: ${employeeName}`}>
-      <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+      <div className="text-center py-8 px-4">
         {step === 1 && (
-          <div>
-            <div style={{ background: 'var(--accent-light)', color: 'var(--accent-primary)', width: 80, height: 80, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+          <div className="flex flex-col items-center">
+            <div className="bg-accent-primary/10 text-accent-primary w-20 h-20 rounded-full flex items-center justify-center mb-6">
               <Camera size={40} />
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Capture Face Data</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Please look directly into the camera to capture facial features for secure attendance.</p>
+            <h3 className="text-xl font-semibold mb-4 text-ink">Capture Face Data</h3>
+            <p className="text-ink/70 max-w-sm">Please look directly into the camera to capture facial features for secure attendance.</p>
           </div>
         )}
         
         {step === 2 && (
-          <div>
-            <div style={{ width: 240, height: 240, background: '#000', margin: '0 auto 1.5rem', borderRadius: '50%', border: '4px solid var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <div className="flex flex-col items-center">
+            <div className="w-[240px] h-[240px] bg-black mb-6 rounded-full border-4 border-accent-primary flex items-center justify-center overflow-hidden">
               {cameraError ? (
-                <div style={{ color: 'var(--error)' }}><AlertCircle size={32} /></div>
+                <div className="text-danger-main"><AlertCircle size={32} /></div>
               ) : (
                 <video 
                   ref={videoRef}
                   autoPlay 
                   playsInline 
                   muted 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} 
+                  className="w-full h-full object-cover scale-x-[-1]"
                 />
               )}
             </div>
             {cameraError ? (
-              <p style={{ color: 'var(--error)' }}>{cameraError}</p>
+              <p className="text-danger-main font-medium">{cameraError}</p>
             ) : (
-              <p style={{ color: 'var(--text-secondary)' }}>Hold still while we scan...</p>
+              <p className="text-ink/70 font-medium animate-pulse">Hold still while we scan...</p>
             )}
           </div>
         )}
 
         {step === 3 && (
-          <div>
-            <div style={{ color: 'var(--success)', marginBottom: '1.5rem' }}>
-              <CheckCircle size={80} style={{ margin: '0 auto' }} />
+          <div className="flex flex-col items-center">
+            <div className="relative mb-6">
+              {capturedImage ? (
+                <img src={capturedImage} alt="Captured face" className="w-[120px] h-[120px] rounded-full object-cover border-4 border-success-main shadow-lg scale-x-[-1]" />
+              ) : (
+                <div className="text-success-main mb-6">
+                  <CheckCircle size={80} className="mx-auto" />
+                </div>
+              )}
+              <div className="absolute -bottom-2 -right-2 bg-success-main text-white rounded-full p-1 border-4 border-surface">
+                <CheckCircle size={24} />
+              </div>
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Enrollment Successful</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Face data has been securely saved.</p>
+            <h3 className="text-xl font-semibold mb-2 text-ink">Enrollment Successful</h3>
+            <p className="text-ink/70">Face data has been securely saved.</p>
           </div>
         )}
 
-        <div style={{ marginTop: '2rem' }}>
-          <Button onClick={handleNext}>
-            {step === 1 ? 'Start Camera' : step === 2 ? 'Capture' : 'Finish'}
+        <div className="mt-8">
+          <Button 
+            onClick={handleNext} 
+            className="w-full py-4 text-lg"
+            color={step === 3 ? "success" : "primary"}
+          >
+            {step === 1 ? 'Start Camera' : step === 2 ? 'Capture Photo' : 'Finish & Close'}
           </Button>
         </div>
       </div>

@@ -17,19 +17,13 @@ export const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <header style={{ display: 'flex', alignItems: 'center', padding: '1.5rem', marginBottom: '1rem' }}>
-      <button onClick={onMenuClick} className="md-hidden" style={{ marginRight: '1rem' }}>
-        <Menu />
+    <header className="flex items-center px-6 py-8 mb-4">
+      <button onClick={onMenuClick} className="lg:hidden mr-4 text-ink hover:text-accent-primary transition-colors">
+        <Menu size={28} />
       </button>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 600 }}>
+      <h1 className="text-3xl font-bold text-ink tracking-tight">
         {getPageTitle()}
       </h1>
-      
-      <style>{`
-        @media (min-width: 768px) {
-          .md-hidden { display: none !important; }
-        }
-      `}</style>
     </header>
   );
 };

@@ -1,37 +1,44 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
 import { Shield, User } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 interface RoleSelectorCardProps {
   onSelectRole: (role: 'employee' | 'admin') => void;
 }
 
 export const RoleSelectorCard: React.FC<RoleSelectorCardProps> = ({ onSelectRole }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (containerRef.current) {
+      gsap.fromTo(containerRef.current.children,
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.4, stagger: 0.15, ease: 'power2.out', delay: 0.2 }
+      );
+    }
+  }, []);
+
   return (
-    <motion.div
-      key="selector"
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.2 }}
-      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-    >
-      <h2 style={{ textAlign: 'center', fontSize: '1.25rem', marginBottom: '1rem' }}>Select your role</h2>
+    <div ref={containerRef} className="flex flex-col gap-4">
+      <h2 className="text-center text-xl font-semibold mb-2 text-ink">Select your role</h2>
       <Button 
-        variant="secondary"
+        variant="flat"
+        color="primary"
         onClick={() => onSelectRole('employee')}
-        style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem', fontSize: '1.125rem' }}
+        className="flex justify-center gap-3 py-6 text-lg w-full font-medium shadow-sm hover:shadow-md transition-shadow"
       >
-        <User /> Employee Check-in
+        <User size={24} /> Employee Check-in
       </Button>
       <Button 
-        variant="secondary"
+        variant="flat"
+        color="default"
         onClick={() => onSelectRole('admin')}
-        style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem', fontSize: '1.125rem' }}
+        className="flex justify-center gap-3 py-6 text-lg w-full font-medium shadow-sm hover:shadow-md transition-shadow"
       >
-        <Shield /> Admin Access
+        <Shield size={24} /> Admin Access
       </Button>
-    </motion.div>
+    </div>
   );
 };
