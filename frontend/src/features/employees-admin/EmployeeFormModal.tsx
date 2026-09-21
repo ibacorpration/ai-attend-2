@@ -36,7 +36,7 @@ export const EmployeeFormModal: React.FC<EmployeeFormModalProps> = ({ isOpen, on
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={employee ? 'Edit Employee' : 'Add Employee'}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 py-2">
         <Input 
           label="Full Name" 
           value={formData.full_name || ''} 
@@ -57,13 +57,13 @@ export const EmployeeFormModal: React.FC<EmployeeFormModalProps> = ({ isOpen, on
         <Input 
           label="Salary ($)" 
           type="number"
-          value={formData.salary || 0} 
+          value={formData.salary ? formData.salary.toString() : ''} 
           onChange={e => setFormData({...formData, salary: Number(e.target.value)})} 
         />
-        <div>
-          <label className="label">Status</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-ink">Status</label>
           <select 
-            className="input-field" 
+            className="h-10 px-3 rounded-lg border border-surface/20 bg-surface text-ink text-sm outline-none focus:ring-2 focus:ring-accent-primary focus:border-accent-primary transition-all" 
             value={formData.status} 
             onChange={e => setFormData({...formData, status: e.target.value as 'active' | 'inactive'})}
           >
@@ -71,9 +71,9 @@ export const EmployeeFormModal: React.FC<EmployeeFormModalProps> = ({ isOpen, on
             <option value="inactive">Inactive</option>
           </select>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem' }}>
-          <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button type="submit">Save Employee</Button>
+        <div className="flex justify-end gap-3 mt-4">
+          <Button type="button" variant="flat" onClick={onClose}>Cancel</Button>
+          <Button type="submit" color="primary">Save Employee</Button>
         </div>
       </form>
     </Modal>
