@@ -28,7 +28,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
           </tr>
         </thead>
         <tbody>
-          {employees.map(emp => (
+          {(Array.isArray(employees) ? employees : []).map(emp => (
             <tr key={emp.id} style={{ borderBottom: '1px solid #E5E7EB' }}>
               <td style={{ padding: '1rem' }}>{emp.employee_code}</td>
               <td style={{ padding: '1rem', fontWeight: 500 }}>{emp.full_name}</td>
@@ -43,7 +43,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
               </td>
             </tr>
           ))}
-          {employees.length === 0 && (
+          {(!Array.isArray(employees) || employees.length === 0) && (
             <tr>
               <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                 No employees found.
