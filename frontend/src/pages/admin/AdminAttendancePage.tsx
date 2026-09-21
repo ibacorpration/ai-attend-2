@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AttendanceFilters } from '@/features/attendance-admin/AttendanceFilters';
 import { AttendanceTable } from '@/features/attendance-admin/AttendanceTable';
 import { attendanceService } from '@/services/attendanceService';

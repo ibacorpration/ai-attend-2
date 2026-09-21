@@ -101,6 +101,12 @@ export const CameraScanView: React.FC = () => {
 
         {/* Success animation */}
         <AnimatePresence>
+          {cameraError && (
+            <div style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(239, 68, 68, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', padding: '1rem', textAlign: 'center', zIndex: 10}}>
+              <AlertCircle size={40} style={{ marginBottom: '0.5rem' }} />
+              <br/>{cameraError}
+            </div>
+          )}
           {scanState === 'SUCCESS' && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
@@ -108,7 +114,7 @@ export const CameraScanView: React.FC = () => {
               style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                 background: 'rgba(16, 185, 129, 0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10
               }}
             >
               <CheckCircle2 size={80} color="var(--success)" fill="white" />

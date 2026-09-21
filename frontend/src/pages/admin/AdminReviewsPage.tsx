@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ReviewQueueTable, ReviewItem } from '@/features/reviews/ReviewQueueTable';
 import { useToast } from '@/context/ToastContext';
 import { reviewService } from '@/services/reviewService';
@@ -41,7 +41,13 @@ export default function AdminReviewsPage() {
 
   return (
     <div>
-      <ReviewQueueTable items={reviews} onAction={handleAction} />
+      {loading ? (
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading reviews...</div>
+      ) : reviews.length === 0 ? (
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No pending reviews.</div>
+      ) : (
+        <ReviewQueueTable items={reviews} onAction={handleAction} />
+      )}
     </div>
   );
 }

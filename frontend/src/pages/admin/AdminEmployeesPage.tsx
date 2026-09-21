@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EmployeeTable } from '@/features/employees-admin/EmployeeTable';
 import { employeeService } from '@/services/employeeService';
 import { Employee } from '@/types/employee';

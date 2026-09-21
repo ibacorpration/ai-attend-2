@@ -12,14 +12,7 @@ interface FaceEnrollmentWizardProps {
 
 export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOpen, onClose, employeeName }) => {
   const [step, setStep] = useState(1);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { stream, error, startCamera, stopCamera } = useCameraStream();
-
-  useEffect(() => {
-    if (step === 2 && videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [step, stream]);
+  const { videoRef, cameraError, startCamera, stopCamera } = useCameraStream();
 
   // Clean up camera when modal closes unexpectedly
   useEffect(() => {
@@ -31,8 +24,8 @@ export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOp
 
   const handleNext = async () => {
     if (step === 1) {
-      await startCamera();
       setStep(2);
+      setTimeout(() => startCamera(), 0);
     } else if (step === 2) {
       // Here you would capture the frame and upload it.
       // Mocking the capture delay:
@@ -59,7 +52,7 @@ export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOp
         {step === 2 && (
           <div>
             <div style={{ width: 240, height: 240, background: '#000', margin: '0 auto 1.5rem', borderRadius: '50%', border: '4px solid var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {error ? (
+              {cameraError ? (
                 <div style={{ color: 'var(--error)' }}><AlertCircle size={32} /></div>
               ) : (
                 <video 
@@ -71,8 +64,8 @@ export const FaceEnrollmentWizard: React.FC<FaceEnrollmentWizardProps> = ({ isOp
                 />
               )}
             </div>
-            {error ? (
-              <p style={{ color: 'var(--error)' }}>{error}</p>
+            {cameraError ? (
+              <p style={{ color: 'var(--error)' }}>{cameraError}</p>
             ) : (
               <p style={{ color: 'var(--text-secondary)' }}>Hold still while we scan...</p>
             )}

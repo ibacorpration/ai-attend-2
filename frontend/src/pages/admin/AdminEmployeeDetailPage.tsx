@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Camera } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
@@ -19,6 +19,8 @@ export default function AdminEmployeeDetailPage() {
     employee_code: 'EMP-001',
     department: 'Engineering',
     status: 'active' as const,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   return (

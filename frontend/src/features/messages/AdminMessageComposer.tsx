@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+
 import { useToast } from '@/context/ToastContext';
 import { messageService } from '@/services/messageService';
 import { Employee } from '@/types/employee';

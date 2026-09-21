@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StatsGrid } from '@/features/dashboard/StatsGrid';
 import { employeeService } from '@/services/employeeService';
 import { useToast } from '@/context/ToastContext';
