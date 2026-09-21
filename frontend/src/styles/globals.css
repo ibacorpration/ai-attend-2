@@ -1,18 +1,19 @@
 @import "tailwindcss";
-@plugin "@heroui/theme";
+@plugin "../hero.ts";
+@source "../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 
 @theme {
   --color-canvas: #F4EFE2;
   --color-surface: #FFFFFF;
   --color-ink: #141414;
-  
+
   --color-accent-primary: #6E7CE0;
   --color-accent-secondary: #D8F06C;
   --color-accent-mint: #92CDB3;
   --color-accent-lavender: #8A85A6;
-  
+
   --color-border-light: #E4DED0;
-  
+
   --color-success-main: #3FAE7A;
   --color-warning-main: #E8A33D;
   --color-danger-main: #E15B4F;
@@ -23,10 +24,10 @@
   --heroui-background: 95.5% 0.015 90;
   --heroui-foreground: 20% 0 0;
   --heroui-content1: 100% 0 0;
-  
+
   --heroui-primary: 60% 0.14 270;
   --heroui-secondary: 90% 0.16 115;
-  
+
   --heroui-success: 65% 0.12 150;
   --heroui-warning: 75% 0.15 70;
   --heroui-danger: 65% 0.16 30;
